@@ -1,4 +1,5 @@
 import UIKit
+import SwiftUI
 
 var str = "Hello, playground"
 
@@ -125,6 +126,101 @@ print("Min :\(comonentDifference.minute!)")
 print("Seconds :\(comonentDifference.second!)")
 
 
+//FIREBASE
+ let firebaseDateFormatter = DateFormatter()
+
+firebaseDateFormatter.timeZone = TimeZone(identifier: "UTC")
+firebaseDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+
+/*
+ Swift’s Date struct conforms to both Equatable and Comparable, which means you check two dates for equality and compare them to see which is earlier.
+
+ In practice, this means you can use <, >, and == to compare them just like you would do with strings and integers. Try this in a playground:
+ */
+
+let now = Date()
+let soon = Date().addingTimeInterval(5000)
+
+now == soon
+now != soon
+now < soon
+now > soon
+
+Text(Date()...Date().addingTimeInterval(600))
+
+// show just the date
+Text(Date().addingTimeInterval(600), style: .date)
+
+// show just the time
+Text(Date().addingTimeInterval(600), style: .time)
+
+// show the relative distance from now, automatically updating
+Text(Date().addingTimeInterval(600), style: .relative)
+
+// make a timer style, automatically updating
+Text(Date().addingTimeInterval(600), style: .timer)
 
 
+//First, this converts a Date to a short date string using dateStyle
 
+let today = Date()
+let formatter1 = DateFormatter()
+formatter1.dateStyle = .short
+print(formatter1.string(from: today))
+
+//Second, this converts the same date to a medium time string using timeStyle:
+
+let formatter2 = DateFormatter()
+formatter2.timeStyle = .medium
+print(formatter2.string(from: today))
+
+//this converts the same date to a date and time string using a custom date format:
+let formatter3 = DateFormatter()
+formatter3.dateFormat = "HH:mm E, d MMM y"
+print(formatter3.string(from: today))
+
+//this attempts to convert a string to a date
+let string = "20:32 Wed, 30 Oct 2019"
+let formatter4 = DateFormatter()
+formatter4.dateFormat = "HH:mm E, d MMM y"
+print(formatter4.date(from: string) ?? "Unknown date")
+
+/*
+ Encoding and decoding dates using the Codable protocol isn’t hard to do, but it does produce some unexpected data by default: Date stores its information as a floating-point number counting the number of seconds since January 1st 2001, rather than something standard involved days, months, and years.
+
+ ISO-8601 is the web’s standard way of referring to dates and times, and looks like this: 2018-12-25T17:30:00Z – in English that’s December 25th 2018, at 5:30pm UTC. Both JSONEncoder and JSONDecoder are able to use this date format rather than the floating-point default – all you have to do is set their dateEncodingStrategy and dateDecodingStrategy properties.
+
+
+ */
+
+let decoder = JSONDecoder()
+decoder.dateDecodingStrategy = .iso8601
+
+let encoder = JSONEncoder()
+encoder.dateEncodingStrategy = .iso8601
+
+let isoDate = "2018-12-26T13:48:05.000Z"
+
+let isoDateFormatter = ISO8601DateFormatter()
+isoDateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+isoDateFormatter.formatOptions = [
+    .withFullDate,
+    .withFullTime,
+    .withDashSeparatorInDate,
+    .withFractionalSeconds]
+
+if let realDate = isoDateFormatter.date(from: isoDate) {
+    print("Got it: \(realDate)")
+}
+
+let isoDate2 = "20181226T134805Z"
+
+func isodateFromString(_ isoDate: String) -> Date? {
+
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyyMMdd'T'HHmmssZ"
+    return formatter.date(from: isoDate)
+}
+
+let dateWeGot = isodateFromString(isoDate2)
+print("Date We Got : \(dateWeGot)")
